@@ -19,11 +19,10 @@ def read_tree(tree_sha1):
 
 def read_commit(commit_sha1):
     commit = read_object(commit_sha1)
-    for line in commit.split(b'\x00'):
+    for line in commit.splitlines():
         if line.startswith('tree '):
             tree_sha1 = line.split(' ')[1]
             read_tree(tree_sha1)
 
-commit_sha1 = 'ef691122727b76e82c85a040066d3730fab20b3d'
+commit_sha1 = 'your_commit_hash_here'
 read_commit(commit_sha1)
-
