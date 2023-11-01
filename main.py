@@ -19,7 +19,7 @@ def read_tree(tree_sha1):
 
 def read_commit(commit_sha1):
     commit = read_object(commit_sha1)
-    for line in commit.splitlines():
+    for line in commit.split(b'\x00'):
         if line.startswith('tree '):
             tree_sha1 = line.split(' ')[1]
             read_tree(tree_sha1)
