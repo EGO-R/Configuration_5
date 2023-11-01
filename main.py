@@ -24,6 +24,6 @@ def read_commit(commit_sha1):
             tree_sha1 = line.split(' ')[1]
             read_tree(tree_sha1)
 
-commit_sha1 = '38f091a4ad91597a85845a071fec77de6750cd9f'
+commit_sha1 = 'ef691122727b76e82c85a040066d3730fab20b3d'
 read_commit(commit_sha1)
 
