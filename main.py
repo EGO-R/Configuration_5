@@ -1,29 +1,34 @@
-import os
 import zlib
+import os
 
-def read_object(sha1):
-    path = os.path.join('.git', 'objects', sha1[:2], sha1[2:])
+def find_object(git_dir, obj_hash):
+    path = os.path.join(git_dir, 'objects', obj_hash[:2], obj_hash[2:])
     with open(path, 'rb') as f:
-        data = zlib.decompress(f.read())
-        return data.decode()
+        return zlib.decompress(f.read())
 
-def read_tree(tree_sha1):
-    tree = read_object(tree_sha1)
-    for line in tree.splitlines():
-        mode, type, sha1, name = line.split(' ', 3)
-        if type == 'blob':
-            print(f'blob {sha1} {name}')
-        elif type == 'tree':
-            print(f'tree {sha1} {name}')
-            read_tree(sha1)
+def parse_tree(tree_data):
+    i = 0
+    entries = []
+    while i < len(tree_data):
+        start = i
+        i = tree_data.index(b'\x00', start)
+        fields = tree_data[start:i].decode().split(' ', 2)
+        entries.append((fields[0], fields[1], tree_data[i+1:i+21].hex()))
+        i += 21
+    return entries
 
-def read_commit(commit_sha1):
-    commit = read_object(commit_sha1)
-    for line in commit.splitlines():
+def print_tree(git_dir, tree_hash):
+    tree_data = find_object(git_dir, tree_hash)
+    for mode, path, hash in parse_tree(tree_data):
+        print(f'{mode} {path} {hash}')
+        if mode == '040000':  # it's a tree, recurse into it
+            print_tree(git_dir, hash)
+
+def print_commit_tree(git_dir, commit_hash):
+    commit_data = find_object(git_dir, commit_hash).decode()
+    for line in commit_data.split('\n'):
         if line.startswith('tree '):
-            tree_sha1 = line.split(' ')[1]
-            read_tree(tree_sha1)
+            print_tree(git_dir, line.split()[1])
+            break
 
-commit_sha1 = 'ef691122727b76e82c85a040066d3730fab20b3d'
-read_commit(commit_sha1)
-
+print_commit_tree('.git', 'acf332acc313825e197aca3e15ae568789e770f1')
