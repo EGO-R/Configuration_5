@@ -73,7 +73,7 @@ args.root = args.root.replace('\\', '/')
 
 arr = []
 print_commit_tree(args.root, args.hash)
-# print_commit_tree('C:/Users/Egor/IdeaProjects/Java-3rd-term/.git', '8e02e57aeef9172f7e652e2992cd6731d15b4cbd')
 # print_commit_tree('C:/Users/Egor/Documents/2_курс/Processors/.git', '637d263220a757d04fceca4f10fa7660b812644f')
+# print_commit_tree('C:\Users\Egor\PycharmProjects\Configuration_5\.git', '6ec687e71299819e5a05f4bb82e9e01c73caf3aa')
 create_graph(arr)
 
